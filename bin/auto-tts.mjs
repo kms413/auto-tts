@@ -10,6 +10,7 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import net from 'node:net'
 import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -171,18 +172,64 @@ function isPortFree(host, port) {
   return spawnSync(VENV_PYTHON, ['-c', script, host, String(port)]).status === 0
 }
 
-function openBrowser(url) {
-  const commands = {
-    darwin: ['open', [url]],
-    win32: ['cmd', ['/c', 'start', '', url]],
+/** Candidate opener commands for the current platform, most preferred first. */
+function browserCandidates(url) {
+  if (process.platform === 'darwin') {
+    return [['open', [url]]]
   }
-  const [command, args] = commands[process.platform] ?? ['xdg-open', [url]]
-  const child = spawn(command, args, { stdio: 'ignore', detached: true })
-  child.on('error', () => { })
-  child.unref()
+  if (process.platform === 'win32') {
+    return [['cmd', ['/c', 'start', '', url]]]
+  }
+  // Linux. Under WSL xdg-open usually is not installed, so prefer the helpers
+  // that bridge to the Windows host.
+  const candidates = []
+  if (process.env.WSL_DISTRO_NAME || process.env.WSL_INTEROP) {
+    candidates.push(['wslview', [url]], ['cmd.exe', ['/c', 'start', '', url]])
+  }
+  candidates.push(['xdg-open', [url]], ['gio', ['open', url]], ['sensible-browser', [url]])
+  return candidates
 }
 
-function startWeb(options) {
+/** Resolve true when the command actually started, false when it is missing. */
+function tryOpen(command, args) {
+  return new Promise((resolve) => {
+    const child = spawn(command, args, { stdio: 'ignore', detached: true })
+    child.once('error', () => resolve(false))
+    child.once('spawn', () => {
+      child.unref()
+      resolve(true)
+    })
+  })
+}
+
+async function openBrowser(url) {
+  for (const [command, args] of browserCandidates(url)) {
+    if (await tryOpen(command, args)) return true
+  }
+  return false
+}
+
+/** Wait until something accepts TCP connections on the given address. */
+function waitForServer(host, port, timeoutMs = 30000) {
+  const deadline = Date.now() + timeoutMs
+  return new Promise((resolve) => {
+    const attempt = () => {
+      const socket = net.createConnection({ host, port })
+      socket.once('connect', () => {
+        socket.destroy()
+        resolve(true)
+      })
+      socket.once('error', () => {
+        socket.destroy()
+        if (Date.now() >= deadline) resolve(false)
+        else setTimeout(attempt, 120)
+      })
+    }
+    attempt()
+  })
+}
+
+async function startWeb(options) {
   if (!existsSync(join(FRONTEND_DIST, 'index.html'))) {
     fail('the bundled frontend is missing. Reinstall the package, or run npm run build in the repo.')
   }
@@ -205,10 +252,11 @@ function startWeb(options) {
   }
 
   const url = `http://${options.host}:${options.port}`
-  process.stdout.write(`==> auto-tts is ready at ${url}\n`)
 
   // The package directory is treated as read-only, so both the generated audio
-  // and the frontend location are handed to the server explicitly.
+  // and the frontend location are handed to the server explicitly. Warnings
+  // still surface, but uvicorn's startup banner and access log stay hidden so
+  // the only thing a user normally sees is the address below.
   const server = spawn(
     VENV_PYTHON,
     [
@@ -221,6 +269,8 @@ function startWeb(options) {
       options.host,
       '--port',
       String(options.port),
+      '--log-level',
+      'warning',
     ],
     {
       stdio: 'inherit',
@@ -232,27 +282,32 @@ function startWeb(options) {
     },
   )
 
-  if (options.open) {
-    // Give uvicorn a moment to bind before the browser asks for the page.
-    setTimeout(() => openBrowser(url), 700)
-  }
-
   const shutdown = (signal) => {
     server.kill(signal)
   }
   process.on('SIGINT', () => shutdown('SIGINT'))
   process.on('SIGTERM', () => shutdown('SIGTERM'))
   server.on('exit', (code) => process.exit(code ?? 0))
+
+  // Open the page only once the port actually answers, so the browser never
+  // races the server and lands on a connection error.
+  if (options.open && (await waitForServer(options.host, options.port))) {
+    if (!(await openBrowser(url))) {
+      process.stderr.write(`auto-tts: could not open a browser — visit ${url}\n`)
+    }
+  }
+
+  process.stdout.write(`${url}\n`)
 }
 
-function main() {
+async function main() {
   const options = parseArgs(process.argv.slice(2))
 
   switch (options.command) {
     case 'web':
     case 'serve':
     case 'start':
-      startWeb(options)
+      await startWeb(options)
       break
     case 'help':
       usage()
@@ -268,4 +323,4 @@ function main() {
   }
 }
 
-main()
+main().catch((error) => fail(error.message))
