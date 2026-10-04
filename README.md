@@ -4,22 +4,34 @@
 
 不需要 API Key，不按字数收费，长文本和批量任务都能排队处理。
 
-## 快速开始
+## 安装
 
-一条命令，不需要 clone 仓库，也不需要手动装 Python 依赖：
-
-```bash
-npx auto-tts web
-```
-
-首次运行会在 `~/.local/share/auto-tts/venv` 建一个独立的 Python 环境并安装后端依赖（只需一次），随后启动服务并自动打开浏览器。
-
-### 环境要求
+先确认本机有 Node.js 和 Python：
 
 | 依赖 | 版本 | 说明 |
 | --- | --- | --- |
-| Node.js | 18 或更高 | 用来运行 `npx` 命令 |
+| Node.js | 18 或更高 | 运行 `auto-tts` 命令 |
 | Python | 3.9 或更高 | 后端运行时 |
+
+然后全局安装：
+
+```bash
+npm i -g auto-tts
+```
+
+## 启动
+
+```bash
+auto-tts web
+```
+
+首次启动会在 `~/.local/share/auto-tts/venv` 建一个独立的 Python 环境并安装后端依赖（只需一次）。等服务就绪后，它会自动打开浏览器，并在终端打印网页地址：
+
+```
+http://127.0.0.1:8000
+```
+
+按 `Ctrl+C` 停止服务。
 
 Debian / Ubuntu 上如果提示无法创建虚拟环境，需要先装 `python3-venv`：
 
@@ -30,11 +42,12 @@ sudo apt install python3-venv
 ### 常用参数
 
 ```bash
-npx auto-tts web --port 9000     # 换一个端口（默认 8000）
-npx auto-tts web --host 0.0.0.0  # 允许局域网内其它设备访问
-npx auto-tts web --no-open       # 不自动打开浏览器
-npx auto-tts web --reset         # 重建 Python 环境后启动
-npx auto-tts --help              # 查看全部用法
+auto-tts web --port 9000     # 换一个端口（默认 8000）
+auto-tts web --host 0.0.0.0  # 允许局域网内其它设备访问
+auto-tts web --no-open       # 不自动打开浏览器
+auto-tts web --reset         # 重建 Python 环境后启动
+auto-tts --help              # 查看全部用法
+auto-tts --version           # 查看版本
 ```
 
 ## 功能
@@ -74,7 +87,7 @@ cd auto-tts
 ./start.sh --rebuild
 ```
 
-`./start.sh` 与 `npx auto-tts web` 效果一致，区别是使用仓库内的 `.venv` 和源码构建产物。
+`./start.sh` 与 `auto-tts web` 效果一致，区别是使用仓库内的 `.venv` 和源码构建产物。
 
 ## HTTP 接口
 
