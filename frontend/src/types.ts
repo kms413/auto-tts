@@ -7,8 +7,6 @@ export interface Voice {
 
 export interface Tone {
   key: string
-  label: string
-  hint: string
   rate: number
   volume: number
   pitch: number
@@ -21,7 +19,6 @@ export interface Job {
   text: string
   voice: string
   tone: string
-  tone_label: string
   rate: number
   volume: number
   pitch: number

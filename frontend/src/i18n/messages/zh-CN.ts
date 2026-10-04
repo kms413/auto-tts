@@ -1,0 +1,88 @@
+/**
+ * Simplified Chinese catalogue. This file is the single source of truth: every
+ * other locale is typed against `Catalog`, so a missing or extra key fails the
+ * TypeScript build.
+ */
+export const zhCN = {
+  'app.title': 'auto-tts · 无限量文本转语音',
+  'app.tonesAvailable': '可用音色',
+  'app.live': '进行中',
+  'app.done': '已完成',
+  'app.failed': '失败',
+  'app.lede': '输入文本，挑一个音色和语气，队列会把它们合成成音频。',
+  'app.dismiss': '知道了',
+  'app.queue': '任务队列',
+  'app.queue.countUnit': '{count}<em>条</em>',
+  'app.license': 'AGPL-3.0 许可',
+  'app.source': '获取源代码',
+
+  'job.status.pending': '排队中',
+  'job.status.processing': '合成中',
+  'job.status.completed': '已完成',
+  'job.status.failed': '失败',
+  'job.empty.title': '队列还是空的',
+  'job.empty.hint': '在左边粘贴文本，选好音色和语气，点「生成语音」后音频会出现在这里。',
+  'job.remove': '删除',
+  'job.spec.tone': '语气',
+  'job.spec.rate': '语速',
+  'job.spec.pitch': '音调',
+  'job.spec.chars': '字数',
+  'job.spec.size': '大小',
+  'job.spec.submitted': '提交',
+  'job.spec.duration': '耗时',
+  'job.size.dash': '—',
+  'job.size.mb': '{value} MB',
+  'job.size.kb': '{value} KB',
+  'job.duration': '{value} 秒',
+  'job.download': '下载 MP3',
+
+  'panel.settings': '合成设置',
+  'panel.mode': '合成模式',
+  'panel.mode.single': '单条',
+  'panel.mode.batch': '批量',
+  'panel.text.label.single': '文本 — 长文本会自动分块',
+  'panel.text.label.batch': '文本 — 空行分隔每一段',
+  'panel.text.placeholder.single': '粘贴或输入要朗读的文本，长度不限。',
+  'panel.text.placeholder.batch': '第一段……\n\n第二段……\n\n第三段……',
+  'panel.readout.chars': '{count}<em>字</em>',
+  'panel.readout.segments': '{count}<em>段</em>',
+  'panel.tone.legend': '语气',
+  'panel.tone.hintFallback': '选择一个语气，下面的参数会跟着调整。',
+  'panel.voice.label': '音色 — 共 {count} 个',
+  'panel.voice.filter': '筛选：zh-CN / Xiaoxiao / en-US',
+  'panel.prosody.rate': '语速',
+  'panel.prosody.volume': '音量',
+  'panel.prosody.pitch': '音调',
+  'panel.submit.busy': '提交中…',
+  'panel.submit.batch': '加入队列（{count} 段）',
+  'panel.submit.single': '生成语音',
+
+  'voice.female': '女',
+  'voice.male': '男',
+
+  'locale.switchLabel': '语言',
+
+  'tone.natural': '自然',
+  'tone.natural.hint': '默认语速与音高',
+  'tone.gentle': '温柔',
+  'tone.gentle.hint': '放慢、压低，像在耳边说话',
+  'tone.cheerful': '愉悦',
+  'tone.cheerful.hint': '略快、上扬，带一点笑意',
+  'tone.excited': '兴奋',
+  'tone.excited.hint': '更快、更亮，情绪外放',
+  'tone.serious': '严肃',
+  'tone.serious.hint': '沉稳、低音，适合声明',
+  'tone.sad': '悲伤',
+  'tone.sad.hint': '缓慢、低沉，语气下沉',
+  'tone.newscast': '新闻播报',
+  'tone.newscast.hint': '清晰、稳定，字正腔圆',
+  'tone.whisper': '低语',
+  'tone.whisper.hint': '轻声细语，音量很轻',
+  'tone.custom': '自定义',
+  'tone.custom.hint': '自己微调语速、音调与音量',
+}
+
+export type MessageId = keyof typeof zhCN
+
+/** Every locale must provide exactly the same set of message ids. */
+export type Catalog = Record<MessageId, string>

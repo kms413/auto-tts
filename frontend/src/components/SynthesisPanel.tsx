@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 
+import { Msg, useT } from '../i18n/t'
+import { toneHintText, toneLabelText } from '../i18n/tones'
 import type { SynthesisPayload, Tone, Voice } from '../types'
 import ProsodySlider from './ProsodySlider'
 
@@ -15,6 +17,7 @@ const DEFAULT_TONE = 'natural'
 const CUSTOM_TONE = 'custom'
 
 export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: Props) {
+  const t = useT()
   const [mode, setMode] = useState<'single' | 'batch'>('single')
   const [text, setText] = useState('')
   const [voice, setVoice] = useState(DEFAULT_VOICE)
@@ -77,15 +80,15 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
   }
 
   return (
-    <section className="deck" aria-label="合成设置">
-      <div className="switch" role="group" aria-label="合成模式">
+    <section className="deck" aria-label={t('panel.settings')}>
+      <div className="switch" role="group" aria-label={t('panel.mode')}>
         <button
           type="button"
           className={mode === 'single' ? 'switch__btn is-on' : 'switch__btn'}
           aria-pressed={mode === 'single'}
           onClick={() => setMode('single')}
         >
-          单条
+          {t('panel.mode.single')}
         </button>
         <button
           type="button"
@@ -93,13 +96,13 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
           aria-pressed={mode === 'batch'}
           onClick={() => setMode('batch')}
         >
-          批量
+          {t('panel.mode.batch')}
         </button>
       </div>
 
       <label className="field">
         <span className="field__label">
-          {mode === 'batch' ? '文本 — 空行分隔每一段' : '文本 — 长文本会自动分块'}
+          {mode === 'batch' ? t('panel.text.label.batch') : t('panel.text.label.single')}
         </span>
         <textarea
           className="input input--area"
@@ -107,8 +110,8 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
           rows={mode === 'batch' ? 7 : 9}
           placeholder={
             mode === 'batch'
-              ? '第一段……\n\n第二段……\n\n第三段……'
-              : '粘贴或输入要朗读的文本，长度不限。'
+              ? t('panel.text.placeholder.batch')
+              : t('panel.text.placeholder.single')
           }
           onChange={(event) => setText(event.target.value)}
         />
@@ -116,19 +119,17 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
 
       <div className="field__meta">
         <span className="readout">
-          {trimmed.length}
-          <em>字</em>
+          <Msg id="panel.readout.chars" values={{ count: trimmed.length, em: (chunks) => <em>{chunks}</em> }} />
         </span>
         {mode === 'batch' && (
           <span className="readout">
-            {segments.length}
-            <em>段</em>
+            <Msg id="panel.readout.segments" values={{ count: segments.length, em: (chunks) => <em>{chunks}</em> }} />
           </span>
         )}
       </div>
 
       <fieldset className="field field--tone">
-        <legend className="field__label">语气</legend>
+        <legend className="field__label">{t('panel.tone.legend')}</legend>
         <div className="chips">
           {tones.map((tone) => (
             <button
@@ -138,19 +139,19 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
               aria-pressed={tone.key === toneKey}
               onClick={() => applyTone(tone)}
             >
-              {tone.label}
+              {toneLabelText(t, tone.key)}
             </button>
           ))}
         </div>
-        <p className="tone__hint">{activeTone ? activeTone.hint : '选择一个语气，下面的参数会跟着调整。'}</p>
+        <p className="tone__hint">{activeTone ? toneHintText(t, activeTone.key) : t('panel.tone.hintFallback')}</p>
       </fieldset>
 
       <label className="field">
-        <span className="field__label">音色 — 共 {voices.length} 个</span>
+        <span className="field__label">{t('panel.voice.label', { count: voices.length })}</span>
         <input
           className="input"
           value={filter}
-          placeholder="筛选：zh-CN / Xiaoxiao / en-US"
+          placeholder={t('panel.voice.filter')}
           onChange={(event) => setFilter(event.target.value)}
         />
         <select className="input input--select" value={voice} onChange={(event) => setVoice(event.target.value)}>
@@ -159,7 +160,7 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
             <optgroup key={locale} label={locale}>
               {items.map((item) => (
                 <option key={item.name} value={item.name}>
-                  {item.gender === 'Female' ? '女' : '男'} · {item.name}
+                  {item.gender === 'Female' ? t('voice.female') : t('voice.male')} · {item.name}
                 </option>
               ))}
             </optgroup>
@@ -168,13 +169,17 @@ export default function SynthesisPanel({ voices, tones, submitting, onSubmit }: 
       </label>
 
       <div className="prosody">
-        <ProsodySlider label="语速" value={rate} unit="%" min={-50} max={100} onChange={adjust(setRate)} />
-        <ProsodySlider label="音量" value={volume} unit="%" min={-100} max={100} onChange={adjust(setVolume)} />
-        <ProsodySlider label="音调" value={pitch} unit="Hz" min={-50} max={50} onChange={adjust(setPitch)} />
+        <ProsodySlider id="rate" label={t('panel.prosody.rate')} value={rate} unit="%" min={-50} max={100} onChange={adjust(setRate)} />
+        <ProsodySlider id="volume" label={t('panel.prosody.volume')} value={volume} unit="%" min={-100} max={100} onChange={adjust(setVolume)} />
+        <ProsodySlider id="pitch" label={t('panel.prosody.pitch')} value={pitch} unit="Hz" min={-50} max={50} onChange={adjust(setPitch)} />
       </div>
 
       <button className="action" disabled={!canSubmit} onClick={handleSubmit}>
-        {submitting ? '提交中…' : mode === 'batch' ? `加入队列（${segments.length} 段）` : '生成语音'}
+        {submitting
+          ? t('panel.submit.busy')
+          : mode === 'batch'
+            ? t('panel.submit.batch', { count: segments.length })
+            : t('panel.submit.single')}
       </button>
     </section>
   )

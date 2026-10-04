@@ -27,7 +27,6 @@ class JobView(BaseModel):
     text: str
     voice: str
     tone: str
-    tone_label: str
     rate: int
     volume: int
     pitch: int

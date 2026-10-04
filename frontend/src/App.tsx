@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { createJobs, deleteJob, fetchJobs, fetchTones, fetchVoices } from './api'
 import JobList from './components/JobList'
+import LocaleSwitch from './components/LocaleSwitch'
 import SynthesisPanel from './components/SynthesisPanel'
 import Waveform from './components/Waveform'
+import { Msg, useT } from './i18n/t'
 import type { Job, SynthesisPayload, Tone, Voice } from './types'
 
 const POLL_INTERVAL_MS = 1500
@@ -15,6 +17,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const loaded = useRef(false)
+  const t = useT()
 
   const refreshJobs = useCallback(async () => {
     try {
@@ -86,36 +89,41 @@ export default function App() {
       <header className="masthead">
         <div className="masthead__row">
           <h1 className="wordmark">auto-tts</h1>
-          <dl className="meters">
-            <div className="meter">
-              <dt>可用音色</dt>
-              <dd>{voices.length}</dd>
-            </div>
-            <div className="meter">
-              <dt>进行中</dt>
-              <dd>{stats.live}</dd>
-            </div>
-            <div className="meter">
-              <dt>已完成</dt>
-              <dd>{stats.done}</dd>
-            </div>
-            {stats.failed > 0 && (
-              <div className="meter meter--alert">
-                <dt>失败</dt>
-                <dd>{stats.failed}</dd>
+          <div className="masthead__aside">
+            <LocaleSwitch />
+            <dl className="meters">
+              <div className="meter">
+                <dt>{t('app.tonesAvailable')}</dt>
+                <dd>{voices.length}</dd>
               </div>
-            )}
-          </dl>
+              <div className="meter">
+                <dt>{t('app.live')}</dt>
+                <dd>{stats.live}</dd>
+              </div>
+              <div className="meter">
+                <dt>{t('app.done')}</dt>
+                <dd>{stats.done}</dd>
+              </div>
+              {stats.failed > 0 && (
+                <div className="meter meter--alert">
+                  <dt>{t('app.failed')}</dt>
+                  <dd>{stats.failed}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
         </div>
         <Waveform variant="hero" barCount={64} />
-        <p className="masthead__lede">输入文本，挑一个音色和语气，队列会把它们合成成音频。</p>
+        <p className="masthead__lede">
+          <Msg id="app.lede" />
+        </p>
       </header>
 
       {error && (
         <div className="alert" role="alert">
           <span className="alert__text">{error}</span>
           <button className="alert__dismiss" onClick={() => setError(null)}>
-            知道了
+            {t('app.dismiss')}
           </button>
         </div>
       )}
@@ -123,12 +131,11 @@ export default function App() {
       <main className="workbench">
         <SynthesisPanel voices={voices} tones={tones} submitting={submitting} onSubmit={handleSubmit} />
 
-        <section className="queue" aria-label="任务队列">
+        <section className="queue" aria-label={t('app.queue')}>
           <div className="queue__head">
-            <h2 className="queue__title">任务队列</h2>
+            <h2 className="queue__title">{t('app.queue')}</h2>
             <span className="readout">
-              {jobs.length}
-              <em>条</em>
+              <Msg id="app.queue.countUnit" values={{ count: jobs.length, em: (chunks) => <em>{chunks}</em> }} />
             </span>
           </div>
           <JobList jobs={jobs} onDelete={handleDelete} />
@@ -138,14 +145,14 @@ export default function App() {
       {/* Section 13 of the AGPL asks network-interactive programs to expose
           their source, so this link stays in the interface. */}
       <footer className="colophon">
-        <span className="colophon__license">AGPL-3.0 许可</span>
+        <span className="colophon__license">{t('app.license')}</span>
         <a
           className="colophon__link"
           href="https://github.com/kms413/auto-tts"
           target="_blank"
           rel="noreferrer noopener"
         >
-          获取源代码
+          {t('app.source')}
         </a>
       </footer>
     </div>

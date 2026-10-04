@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1146" height="717"
+     viewBox="0 0 1146 717" role="img"
+     aria-label="auto-tts 无限量文本转语音">
+  <title>auto-tts · 无限量文本转语音</title>
+
+  <rect width="1146" height="717" fill="#E8E6E1"/>
+
+  <!-- eyebrow -->
+  <rect x="72" y="74" width="13" height="13" fill="#E23A2E"/>
+  <text x="96" y="87" font-family="'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace" font-size="19"
+        letter-spacing="2.4" fill="#63666B">OPEN SOURCE · EDGE-TTS · AGPL-3.0</text>
+
+  <!-- wordmark -->
+  <text id="title" x="72" y="300" font-family="'Space Grotesk','PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="176"
+        font-weight="700" letter-spacing="-6.5" fill="#191B1D">auto-tts</text>
+  <rect x="732.0" y="221" width="34" height="34" fill="#E23A2E"/>
+
+  <!-- claim: the hook, with the differentiator picked out in the signal colour -->
+  <text x="72" y="412" font-family="'Space Grotesk','PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="98"
+        font-weight="700" letter-spacing="1"><tspan fill="#E23A2E">无限量</tspan><tspan fill="#191B1D">文本转语音</tspan></text>
+  <text x="74" y="452" font-family="'Space Grotesk','PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="24"
+        fill="#63666B">选音色与语气 · 批量排队 · 一键合成 MP3，可在线试听下载</text>
+
+  <!-- waveform band -->
+  <line x1="72" y1="496" x2="1074" y2="496" stroke="#CFCCC5" stroke-width="1"/>
+  <line x1="72" y1="590" x2="1074" y2="590" stroke="#CFCCC5" stroke-width="1"/>
+    <rect x="72.00" y="538.00" width="11.72" height="10" rx="1.5" fill="#191B1D"/>
+    <rect x="87.72" y="535.50" width="11.72" height="15" rx="1.5" fill="#191B1D"/>
+    <rect x="103.44" y="531.00" width="11.72" height="24" rx="1.5" fill="#191B1D"/>
+    <rect x="119.16" y="524.00" width="11.72" height="38" rx="1.5" fill="#191B1D"/>
+    <rect x="134.88" y="515.50" width="11.72" height="55" rx="1.5" fill="#191B1D"/>
+    <rect x="150.59" y="507.00" width="11.72" height="72" rx="1.5" fill="#191B1D"/>
+    <rect x="166.31" y="513.00" width="11.72" height="60" rx="1.5" fill="#191B1D"/>
+    <rect x="182.03" y="524.00" width="11.72" height="38" rx="1.5" fill="#191B1D"/>
+    <rect x="197.75" y="532.50" width="11.72" height="21" rx="1.5" fill="#191B1D"/>
+    <rect x="213.47" y="536.50" width="11.72" height="13" rx="1.5" fill="#191B1D"/>
+    <rect x="229.19" y="533.50" width="11.72" height="19" rx="1.5" fill="#191B1D"/>
+    <rect x="244.91" y="527.50" width="11.72" height="31" rx="1.5" fill="#191B1D"/>
+    <rect x="260.62" y="519.00" width="11.72" height="48" rx="1.5" fill="#191B1D"/>
+    <rect x="276.34" y="510.00" width="11.72" height="66" rx="1.5" fill="#191B1D"/>
+    <rect x="292.06" y="503.50" width="11.72" height="79" rx="1.5" fill="#191B1D"/>
+    <rect x="307.78" y="511.50" width="11.72" height="63" rx="1.5" fill="#191B1D"/>
+    <rect x="323.50" y="522.50" width="11.72" height="41" rx="1.5" fill="#191B1D"/>
+    <rect x="339.22" y="531.00" width="11.72" height="24" rx="1.5" fill="#191B1D"/>
+    <rect x="354.94" y="535.50" width="11.72" height="15" rx="1.5" fill="#191B1D"/>
+    <rect x="370.66" y="532.00" width="11.72" height="22" rx="1.5" fill="#191B1D"/>
+    <rect x="386.38" y="525.50" width="11.72" height="35" rx="1.5" fill="#191B1D"/>
+    <rect x="402.09" y="516.00" width="11.72" height="54" rx="1.5" fill="#191B1D"/>
+    <rect x="417.81" y="507.50" width="11.72" height="71" rx="1.5" fill="#191B1D"/>
+    <rect x="433.53" y="502.00" width="11.72" height="82" rx="1.5" fill="#191B1D"/>
+    <rect x="449.25" y="510.00" width="11.72" height="66" rx="1.5" fill="#191B1D"/>
+    <rect x="464.97" y="521.00" width="11.72" height="44" rx="1.5" fill="#191B1D"/>
+    <rect x="480.69" y="530.00" width="11.72" height="26" rx="1.5" fill="#191B1D"/>
+    <rect x="496.41" y="534.50" width="11.72" height="17" rx="1.5" fill="#191B1D"/>
+    <rect x="512.12" y="537.00" width="11.72" height="12" rx="1.5" fill="#191B1D"/>
+    <rect x="527.84" y="533.50" width="11.72" height="19" rx="1.5" fill="#191B1D"/>
+    <rect x="543.56" y="528.00" width="11.72" height="30" rx="1.5" fill="#191B1D"/>
+    <rect x="559.28" y="519.50" width="11.72" height="47" rx="1.5" fill="#191B1D"/>
+    <rect x="575.00" y="509.00" width="11.72" height="68" rx="1.5" fill="#191B1D"/>
+    <rect x="590.72" y="500.00" width="11.72" height="86" rx="1.5" fill="#191B1D"/>
+    <rect x="606.44" y="506.00" width="11.72" height="74" rx="1.5" fill="#191B1D"/>
+    <rect x="622.16" y="518.00" width="11.72" height="50" rx="1.5" fill="#191B1D"/>
+    <rect x="637.88" y="528.00" width="11.72" height="30" rx="1.5" fill="#191B1D"/>
+    <rect x="653.59" y="533.50" width="11.72" height="19" rx="1.5" fill="#191B1D"/>
+    <rect x="669.31" y="536.00" width="11.72" height="14" rx="1.5" fill="#191B1D"/>
+    <rect x="685.03" y="531.50" width="11.72" height="23" rx="1.5" fill="#191B1D"/>
+    <rect x="700.75" y="523.50" width="11.72" height="39" rx="1.5" fill="#E23A2E"/>
+    <rect x="716.47" y="512.50" width="11.72" height="61" rx="1.5" fill="#E23A2E"/>
+    <rect x="732.19" y="504.00" width="11.72" height="78" rx="1.5" fill="#E23A2E"/>
+    <rect x="747.91" y="499.00" width="11.72" height="88" rx="1.5" fill="#E23A2E"/>
+    <rect x="763.62" y="507.00" width="11.72" height="72" rx="1.5" fill="#E23A2E"/>
+    <rect x="779.34" y="517.00" width="11.72" height="52" rx="1.5" fill="#E23A2E"/>
+    <rect x="795.06" y="526.50" width="11.72" height="33" rx="1.5" fill="#E23A2E"/>
+    <rect x="810.78" y="532.50" width="11.72" height="21" rx="1.5" fill="#E23A2E"/>
+    <rect x="826.50" y="535.50" width="11.72" height="15" rx="1.5" fill="#E23A2E"/>
+    <rect x="842.22" y="530.00" width="11.72" height="26" rx="1.5" fill="#E23A2E"/>
+    <rect x="857.94" y="520.50" width="11.72" height="45" rx="1.5" fill="#E23A2E"/>
+    <rect x="873.66" y="509.50" width="11.72" height="67" rx="1.5" fill="#191B1D"/>
+    <rect x="889.38" y="501.00" width="11.72" height="84" rx="1.5" fill="#191B1D"/>
+    <rect x="905.09" y="508.00" width="11.72" height="70" rx="1.5" fill="#191B1D"/>
+    <rect x="920.81" y="519.00" width="11.72" height="48" rx="1.5" fill="#191B1D"/>
+    <rect x="936.53" y="528.50" width="11.72" height="29" rx="1.5" fill="#191B1D"/>
+    <rect x="952.25" y="534.00" width="11.72" height="18" rx="1.5" fill="#191B1D"/>
+    <rect x="967.97" y="536.50" width="11.72" height="13" rx="1.5" fill="#191B1D"/>
+    <rect x="983.69" y="532.00" width="11.72" height="22" rx="1.5" fill="#191B1D"/>
+    <rect x="999.41" y="524.50" width="11.72" height="37" rx="1.5" fill="#191B1D"/>
+    <rect x="1015.12" y="514.00" width="11.72" height="58" rx="1.5" fill="#191B1D"/>
+    <rect x="1030.84" y="505.00" width="11.72" height="76" rx="1.5" fill="#191B1D"/>
+    <rect x="1046.56" y="512.00" width="11.72" height="62" rx="1.5" fill="#191B1D"/>
+    <rect x="1062.28" y="526.00" width="11.72" height="34" rx="1.5" fill="#191B1D"/>
+
+  <!-- footer -->
+  <text x="72" y="656" font-family="'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace" font-size="20"
+        letter-spacing="0.5" fill="#191B1D">npm i -g auto-tts</text>
+  <text x="1074" y="656" font-family="'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace" font-size="20"
+        letter-spacing="0.5" fill="#63666B" text-anchor="end">github.com/kms413/auto-tts</text>
+</svg>

@@ -37,20 +37,19 @@ def format_pitch(value: int) -> str:
 
 # Speaking-tone presets. edge-tts does not expose emotion styles, so every tone
 # is approximated with a rate/volume/pitch delta triple that the frontend can
-# apply to the prosody controls.
+# apply to the prosody controls. Display names live in the frontend locale
+# catalogues, keyed by the `key` below.
 TONE_PRESETS: tuple[dict, ...] = (
-    {"key": "natural", "label": "自然", "hint": "默认语速与音高", "rate": 0, "volume": 0, "pitch": 0},
-    {"key": "gentle", "label": "温柔", "hint": "放慢、压低，像在耳边说话", "rate": -10, "volume": -6, "pitch": 4},
-    {"key": "cheerful", "label": "愉悦", "hint": "略快、上扬，带一点笑意", "rate": 8, "volume": 4, "pitch": 8},
-    {"key": "excited", "label": "兴奋", "hint": "更快、更亮，情绪外放", "rate": 16, "volume": 8, "pitch": 14},
-    {"key": "serious", "label": "严肃", "hint": "沉稳、低音，适合声明", "rate": -6, "volume": 2, "pitch": -8},
-    {"key": "sad", "label": "悲伤", "hint": "缓慢、低沉，语气下沉", "rate": -14, "volume": -8, "pitch": -6},
-    {"key": "newscast", "label": "新闻播报", "hint": "清晰、稳定，字正腔圆", "rate": 6, "volume": 6, "pitch": -2},
-    {"key": "whisper", "label": "低语", "hint": "轻声细语，音量很轻", "rate": -8, "volume": -40, "pitch": 2},
-    {"key": "custom", "label": "自定义", "hint": "自己微调语速、音调与音量", "rate": 0, "volume": 0, "pitch": 0},
+    {"key": "natural", "rate": 0, "volume": 0, "pitch": 0},
+    {"key": "gentle", "rate": -10, "volume": -6, "pitch": 4},
+    {"key": "cheerful", "rate": 8, "volume": 4, "pitch": 8},
+    {"key": "excited", "rate": 16, "volume": 8, "pitch": 14},
+    {"key": "serious", "rate": -6, "volume": 2, "pitch": -8},
+    {"key": "sad", "rate": -14, "volume": -8, "pitch": -6},
+    {"key": "newscast", "rate": 6, "volume": 6, "pitch": -2},
+    {"key": "whisper", "rate": -8, "volume": -40, "pitch": 2},
+    {"key": "custom", "rate": 0, "volume": 0, "pitch": 0},
 )
-
-TONE_INDEX: dict[str, dict] = {preset["key"]: preset for preset in TONE_PRESETS}
 
 DEFAULT_TONE = "natural"
 
@@ -58,12 +57,6 @@ DEFAULT_TONE = "natural"
 def list_tones() -> list[dict]:
     """Return the speaking-tone presets understood by the API."""
     return [dict(preset) for preset in TONE_PRESETS]
-
-
-def tone_label(key: str) -> str:
-    """Resolve a tone key to its display label, falling back to the raw key."""
-    preset = TONE_INDEX.get(key)
-    return preset["label"] if preset else key
 
 
 async def list_voices() -> list[dict]:

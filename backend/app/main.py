@@ -110,7 +110,10 @@ async def get_audio(filename: str) -> FileResponse:
     path = config.AUDIO_DIR / filename
     if not path.is_file():
         raise HTTPException(status_code=404, detail="Audio not found")
-    return FileResponse(path, media_type="audio/mpeg", filename=filename)
+    # Served without a Content-Disposition header: browsers only stream media
+    # inline when the response is not flagged as a download. The UI's own
+    # download link supplies the filename.
+    return FileResponse(path, media_type="audio/mpeg")
 
 
 # Serve the built frontend from the same origin so a single command can run the

@@ -20,3 +20,7 @@ skills-lock.json
 .DS_Store
 .idea/
 .vscode/.npmrc
+
+# Local-only config and agent tooling (never published)
+.npmrc
+.trae/

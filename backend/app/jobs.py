@@ -38,7 +38,6 @@ class Job:
             "text": self.text,
             "voice": self.voice,
             "tone": self.tone,
-            "tone_label": tts.tone_label(self.tone),
             "rate": self.rate,
             "volume": self.volume,
             "pitch": self.pitch,

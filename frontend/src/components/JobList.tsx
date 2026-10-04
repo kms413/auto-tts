@@ -1,3 +1,8 @@
+import { useIntl } from 'react-intl'
+
+import type { MessageId } from '../i18n/messages/zh-CN'
+import { Msg, useT } from '../i18n/t'
+import { toneLabelText } from '../i18n/tones'
 import type { Job, JobStatus } from '../types'
 import Waveform from './Waveform'
 
@@ -6,34 +11,39 @@ interface Props {
   onDelete: (id: string) => void
 }
 
-const STATUS_TEXT: Record<JobStatus, string> = {
-  pending: '排队中',
-  processing: '合成中',
-  completed: '已完成',
-  failed: '失败',
+const STATUS_ID: Record<JobStatus, MessageId> = {
+  pending: 'job.status.pending',
+  processing: 'job.status.processing',
+  completed: 'job.status.completed',
+  failed: 'job.status.failed',
 }
 
 function signed(value: number, unit: string) {
   return `${value > 0 ? '+' : ''}${value}${unit}`
 }
 
-function formatSize(bytes: number) {
-  if (!bytes) return '—'
-  return bytes > 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(2)} MB` : `${(bytes / 1024).toFixed(1)} KB`
-}
-
-function formatClock(timestamp: number) {
-  return new Date(timestamp * 1000).toLocaleTimeString('zh-CN', { hour12: false })
-}
-
 export default function JobList({ jobs, onDelete }: Props) {
+  const intl = useIntl()
+  const t = useT()
+
   if (jobs.length === 0) {
     return (
       <div className="empty">
-        <p className="empty__title">队列还是空的</p>
-        <p className="empty__hint">在左边粘贴文本，选好音色和语气，点「生成语音」后音频会出现在这里。</p>
+        <p className="empty__title">
+          <Msg id="job.empty.title" />
+        </p>
+        <p className="empty__hint">
+          <Msg id="job.empty.hint" />
+        </p>
       </div>
     )
+  }
+
+  function formatSize(bytes: number) {
+    if (!bytes) return t('job.size.dash')
+    return bytes > 1024 * 1024
+      ? t('job.size.mb', { value: (bytes / 1024 / 1024).toFixed(2) })
+      : t('job.size.kb', { value: (bytes / 1024).toFixed(1) })
   }
 
   return (
@@ -46,12 +56,12 @@ export default function JobList({ jobs, onDelete }: Props) {
           <li key={job.id} className={`take take--${job.status}`}>
             <div className="take__head">
               <span className="take__index">{String(index + 1).padStart(2, '0')}</span>
-              <span className={`take__status take__status--${job.status}`}>{STATUS_TEXT[job.status]}</span>
+              <span className={`take__status take__status--${job.status}`}>{t(STATUS_ID[job.status])}</span>
               <span className="take__voice" title={job.voice}>
                 {job.voice}
               </span>
               <button className="take__remove" onClick={() => onDelete(job.id)}>
-                删除
+                {t('job.remove')}
               </button>
             </div>
 
@@ -59,33 +69,33 @@ export default function JobList({ jobs, onDelete }: Props) {
 
             <dl className="take__spec">
               <div>
-                <dt>语气</dt>
-                <dd>{job.tone_label}</dd>
+                <dt>{t('job.spec.tone')}</dt>
+                <dd>{toneLabelText(t, job.tone)}</dd>
               </div>
               <div>
-                <dt>语速</dt>
+                <dt>{t('job.spec.rate')}</dt>
                 <dd>{signed(job.rate, '%')}</dd>
               </div>
               <div>
-                <dt>音调</dt>
+                <dt>{t('job.spec.pitch')}</dt>
                 <dd>{signed(job.pitch, 'Hz')}</dd>
               </div>
               <div>
-                <dt>字数</dt>
+                <dt>{t('job.spec.chars')}</dt>
                 <dd>{job.chars}</dd>
               </div>
               <div>
-                <dt>大小</dt>
+                <dt>{t('job.spec.size')}</dt>
                 <dd>{formatSize(job.size_bytes)}</dd>
               </div>
               <div>
-                <dt>提交</dt>
-                <dd>{formatClock(job.created_at)}</dd>
+                <dt>{t('job.spec.submitted')}</dt>
+                <dd>{intl.formatTime(new Date(job.created_at * 1000))}</dd>
               </div>
               {duration && (
                 <div>
-                  <dt>耗时</dt>
-                  <dd>{duration}s</dd>
+                  <dt>{t('job.spec.duration')}</dt>
+                  <dd>{t('job.duration', { value: duration })}</dd>
                 </div>
               )}
             </dl>
@@ -96,9 +106,9 @@ export default function JobList({ jobs, onDelete }: Props) {
 
             {job.status === 'completed' && job.audio_url && (
               <div className="take__play">
-                <audio controls preload="none" src={job.audio_url} />
+                <audio controls preload="metadata" src={job.audio_url} />
                 <a className="take__download" href={job.audio_url} download={`${job.id}.mp3`}>
-                  下载 MP3
+                  {t('job.download')}
                 </a>
               </div>
             )}

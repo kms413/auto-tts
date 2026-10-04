@@ -104,6 +104,18 @@ body {
   color: var(--signal);
 }
 
+.masthead__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+/* Inside the aside the switch follows the column alignment, not its own. */
+.masthead__aside .switch {
+  align-self: auto;
+}
+
 .masthead__lede {
   margin: 14px 0 0;
   max-width: 52ch;
@@ -688,6 +700,10 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 18px;
+  }
+
+  .masthead__aside {
+    align-items: flex-start;
   }
 
   .meters {
