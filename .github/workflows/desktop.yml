@@ -1,0 +1,63 @@
+name: desktop
+
+# PyInstaller cannot cross-compile, so every platform is built on its own runner.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: auto-tts-linux-x64
+          - os: windows-latest
+            artifact: auto-tts-windows-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: pnpm -C frontend install --frozen-lockfile
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install Linux runtime libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libxkbcommon-x11-0 libnss3
+
+      - name: Build desktop application
+        run: node desktop/build.mjs
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: cd desktop/dist && zip -r ../auto-tts-linux-x64.zip auto-tts
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path desktop/dist/auto-tts -DestinationPath desktop/auto-tts-windows-x64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: desktop/auto-tts-*.zip
+          if-no-files-found: error

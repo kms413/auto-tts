@@ -24,3 +24,7 @@ skills-lock.json
 # Local-only config and agent tooling (never published)
 .npmrc
 .trae/
+
+# Desktop build output (the .venv/ rule above covers the build environment)
+/desktop/build/
+/desktop/dist/

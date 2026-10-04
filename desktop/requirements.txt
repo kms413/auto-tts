@@ -1,0 +1,11 @@
+# Dependencies used only to build the desktop application. The end user does not
+# install these: PyInstaller freezes them into the shipped bundle.
+#
+# The backend, fastapi and uvicorn versions are reused verbatim.
+-r ../backend/requirements.txt
+
+# Linux renders through Qt / QtWebEngine, which ships prebuilt binaries and
+# therefore needs no system GTK or WebKit development headers.
+pywebview[qt]>=6.0,<7
+
+pyinstaller>=6.10

@@ -1,6 +1,6 @@
 {
   "name": "auto-tts",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Unlimited text to speech with selectable voices and speaking tones, powered by edge-tts.",
   "license": "AGPL-3.0-or-later",
   "author": "kms413",
@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "npm --prefix frontend run build",
+    "desktop:build": "node desktop/build.mjs",
     "prepack": "npm run build",
     "dev": "./start.sh --dev",
     "start": "./start.sh"
