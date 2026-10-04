@@ -1,8 +1,10 @@
 packages:
   - '.'
 
-onlyBuiltDependencies:
-  - esbuild
+# pnpm 11 replaced onlyBuiltDependencies with this map, and installing now fails
+# outright when a build script is left unapproved, so esbuild must be named here.
+allowBuilds:
+  esbuild: true
 
 # pnpm 11 runs a dependency check before every `pnpm run`. esbuild ships a
 # working platform binary, so skip the check to avoid a false build error.
