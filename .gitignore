@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+backend/data/
+
+# Node
+node_modules/
+dist/
+.pnpm-store/
+*.local
+*.tgz
+
+# Vendored agent skills (downloaded tooling, not part of the project)
+.agents/
+skills-lock.json
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/

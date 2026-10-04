@@ -1,0 +1,44 @@
+{
+  "name": "auto-tts",
+  "version": "0.1.0",
+  "description": "Unlimited text to speech with selectable voices and speaking tones, powered by edge-tts.",
+  "license": "AGPL-3.0-or-later",
+  "author": "kms413",
+  "type": "module",
+  "bin": {
+    "auto-tts": "bin/auto-tts.mjs"
+  },
+  "files": [
+    "bin/",
+    "backend/app/*.py",
+    "backend/requirements.txt",
+    "frontend/dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "prepack": "npm run build",
+    "dev": "./start.sh --dev",
+    "start": "./start.sh"
+  },
+  "keywords": [
+    "tts",
+    "text-to-speech",
+    "edge-tts",
+    "speech-synthesis",
+    "audio",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kms413/auto-tts.git"
+  },
+  "homepage": "https://github.com/kms413/auto-tts",
+  "bugs": {
+    "url": "https://github.com/kms413/auto-tts/issues"
+  }
+}

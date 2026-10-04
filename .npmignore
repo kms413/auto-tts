@@ -1,0 +1,11 @@
+# Applied on top of the "files" allowlist in package.json.
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local runtime data
+backend/data/
+
+# Editors / OS
+.DS_Store
