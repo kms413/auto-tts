@@ -1,11 +1,16 @@
 name: desktop
 
 # PyInstaller cannot cross-compile, so every platform is built on its own runner.
+# The action majors below are the oldest ones that run on Node 24; older majors
+# still declare node20, which GitHub removed from hosted runners on 2026-09-23.
 on:
   workflow_dispatch:
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -17,26 +22,34 @@ jobs:
             artifact: auto-tts-linux-x64
           - os: windows-latest
             artifact: auto-tts-windows-x64
+          - os: macos-15-intel        # Intel
+            artifact: auto-tts-macos-x64
+          - os: macos-15              # Apple Silicon
+            artifact: auto-tts-macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 11
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install frontend dependencies
         run: pnpm -C frontend install --frozen-lockfile
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            desktop/requirements.txt
 
       - name: Install Linux runtime libraries
         if: runner.os == 'Linux'
@@ -49,15 +62,39 @@ jobs:
 
       - name: Package (Linux)
         if: runner.os == 'Linux'
-        run: cd desktop/dist && zip -r ../auto-tts-linux-x64.zip auto-tts
+        run: cd desktop/dist && zip -r ../${{ matrix.artifact }}.zip auto-tts
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path desktop/dist/auto-tts -DestinationPath desktop/auto-tts-windows-x64.zip
+        run: Compress-Archive -Path desktop/dist/auto-tts -DestinationPath desktop/${{ matrix.artifact }}.zip
 
-      - uses: actions/upload-artifact@v4
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: ditto -c -k --sequesterRsrc --keepParent desktop/dist/auto-tts desktop/${{ matrix.artifact }}.zip
+
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.artifact }}
-          path: desktop/auto-tts-*.zip
+          path: desktop/${{ matrix.artifact }}.zip
           if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Download every platform at once and publish a single release, so the
+      # matrix jobs never race each other creating the release.
+      - uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true
