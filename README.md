@@ -4,6 +4,8 @@
 
 不需要 API Key，不按字数收费，长文本和批量任务都能排队处理。
 
+![auto-tts 界面预览](assets/view.png)
+
 ## 安装
 
 先确认本机有 Node.js 和 Python：

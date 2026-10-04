@@ -13,6 +13,7 @@
     "backend/app/*.py",
     "backend/requirements.txt",
     "frontend/dist/",
+    "assets/",
     "LICENSE",
     "README.md"
   ],
