@@ -40,5 +40,8 @@
   "homepage": "https://github.com/kms413/auto-tts",
   "bugs": {
     "url": "https://github.com/kms413/auto-tts/issues"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
