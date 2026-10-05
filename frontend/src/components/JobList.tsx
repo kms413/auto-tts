@@ -110,6 +110,11 @@ export default function JobList({ jobs, onDelete }: Props) {
                 <a className="take__download" href={job.audio_url} download={`${job.id}.mp3`}>
                   {t('job.download')}
                 </a>
+                {job.srt_url && (
+                  <a className="take__download" href={job.srt_url} download={`${job.id}.srt`}>
+                    {t('job.downloadSrt')}
+                  </a>
+                )}
               </div>
             )}
           </li>

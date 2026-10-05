@@ -38,3 +38,4 @@ class JobView(BaseModel):
     size_bytes: int
     chars: int
     audio_url: str | None = None
+    srt_url: str | None = None

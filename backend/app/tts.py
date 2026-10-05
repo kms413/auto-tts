@@ -13,6 +13,12 @@ from . import config
 
 ProgressCallback = Callable[[float], Awaitable[None]]
 
+# edge-tts streams 48 kbps CBR mono mp3 and reports boundaries in 100-nanosecond
+# ticks. Each Communicate counts from zero, so the bytes already written are used
+# to shift later chunks onto a single timeline.
+_TICKS_PER_SECOND = 10_000_000
+_MP3_BITRATE_BPS = 48_000
+
 _voices_cache: list[dict] | None = None
 _voices_lock = asyncio.Lock()
 
@@ -99,6 +105,20 @@ def split_text(text: str, limit: int) -> list[str]:
     return chunks
 
 
+def _audio_ticks(audio_bytes: int) -> int:
+    """Convert a count of 48 kbps mp3 bytes into edge-tts timing ticks."""
+    return audio_bytes * 8 * _TICKS_PER_SECOND // _MP3_BITRATE_BPS
+
+
+def _write_subtitles(submaker: edge_tts.SubMaker, srt_path: Path) -> bool:
+    """Write an SRT file, returning False when no boundaries were reported."""
+    srt = submaker.get_srt()
+    if not srt.strip():
+        return False
+    srt_path.write_text(srt, encoding="utf-8")
+    return True
+
+
 async def synthesize(
     text: str,
     voice: str,
@@ -106,28 +126,48 @@ async def synthesize(
     volume: str,
     pitch: str,
     out_path: Path,
+    srt_path: Path | None = None,
     on_progress: ProgressCallback | None = None,
 ) -> int:
-    """Synthesise *text* into an mp3 file and return the number of audio bytes written."""
+    """Synthesise *text* into an mp3 file and return the number of audio bytes written.
+
+    When *srt_path* is provided, sentence-level subtitles derived from the
+    service's boundary events are written alongside the audio.
+    """
     chunks = split_text(text, config.CHUNK_SIZE)
     if not chunks:
         raise ValueError("Text must not be empty")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = out_path.with_name(f"{out_path.name}.part")
+    submaker = edge_tts.SubMaker()
     total = len(chunks)
     written = 0
     try:
         with tmp_path.open("wb") as handle:
             for index, chunk in enumerate(chunks):
-                communicate = edge_tts.Communicate(chunk, voice, rate=rate, volume=volume, pitch=pitch)
+                # Boundary offsets from a fresh Communicate are relative to its own
+                # audio, so shift them by the duration of everything written so far.
+                base = _audio_ticks(written)
+                communicate = edge_tts.Communicate(
+                    chunk,
+                    voice,
+                    rate=rate,
+                    volume=volume,
+                    pitch=pitch,
+                    boundary="SentenceBoundary",
+                )
                 async for message in communicate.stream():
                     if message["type"] == "audio":
                         handle.write(message["data"])
                         written += len(message["data"])
+                    elif message["type"] in ("WordBoundary", "SentenceBoundary"):
+                        submaker.feed({**message, "offset": message["offset"] + base})
                 if on_progress is not None:
                     await on_progress((index + 1) / total)
         tmp_path.replace(out_path)
+        if srt_path is not None:
+            _write_subtitles(submaker, srt_path)
     except BaseException:
         tmp_path.unlink(missing_ok=True)
         raise

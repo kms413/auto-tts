@@ -30,6 +30,7 @@ export interface Job {
   size_bytes: number
   chars: number
   audio_url: string | null
+  srt_url: string | null
 }
 
 export interface SynthesisPayload {

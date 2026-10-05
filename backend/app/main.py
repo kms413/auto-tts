@@ -116,6 +116,16 @@ async def get_audio(filename: str) -> FileResponse:
     return FileResponse(path, media_type="audio/mpeg")
 
 
+@app.get("/api/subtitles/{filename}")
+async def get_subtitles(filename: str) -> FileResponse:
+    if Path(filename).name != filename:
+        raise HTTPException(status_code=404, detail="Subtitles not found")
+    path = config.AUDIO_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Subtitles not found")
+    return FileResponse(path, media_type="application/x-subrip")
+
+
 # Serve the built frontend from the same origin so a single command can run the
 # whole app on one port. Mounted last, so every /api route above takes priority.
 if config.FRONTEND_DIST.is_dir():

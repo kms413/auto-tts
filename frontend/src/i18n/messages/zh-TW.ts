@@ -33,6 +33,7 @@ export const zhTW: Catalog = {
   'job.size.kb': '{value} KB',
   'job.duration': '{value} 秒',
   'job.download': '下載 MP3',
+  'job.downloadSrt': '下載 SRT',
 
   'panel.settings': '合成設定',
   'panel.mode': '合成模式',

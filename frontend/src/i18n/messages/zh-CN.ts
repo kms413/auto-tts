@@ -35,6 +35,7 @@ export const zhCN = {
   'job.size.kb': '{value} KB',
   'job.duration': '{value} 秒',
   'job.download': '下载 MP3',
+  'job.downloadSrt': '下载 SRT',
 
   'panel.settings': '合成设置',
   'panel.mode': '合成模式',

@@ -27,10 +27,15 @@ class Job:
     created_at: float = field(default_factory=time.time)
     finished_at: float | None = None
     size_bytes: int = 0
+    has_subtitles: bool = False
 
     @property
     def filename(self) -> str:
         return f"{self.id}.mp3"
+
+    @property
+    def srt_filename(self) -> str:
+        return f"{self.id}.srt"
 
     def to_dict(self) -> dict:
         return {
@@ -49,6 +54,11 @@ class Job:
             "size_bytes": self.size_bytes,
             "chars": len(self.text),
             "audio_url": f"/api/audio/{self.filename}" if self.status == "completed" else None,
+            "srt_url": (
+                f"/api/subtitles/{self.srt_filename}"
+                if self.status == "completed" and self.has_subtitles
+                else None
+            ),
         }
 
 
@@ -101,6 +111,7 @@ class JobManager:
         if job is None:
             return False
         (config.AUDIO_DIR / job.filename).unlink(missing_ok=True)
+        (config.AUDIO_DIR / job.srt_filename).unlink(missing_ok=True)
         return True
 
     async def _worker(self) -> None:
@@ -120,6 +131,7 @@ class JobManager:
         async def on_progress(value: float) -> None:
             job.progress = value
 
+        srt_path = config.AUDIO_DIR / job.srt_filename
         try:
             size = await tts.synthesize(
                 job.text,
@@ -128,9 +140,11 @@ class JobManager:
                 tts.format_volume(job.volume),
                 tts.format_pitch(job.pitch),
                 config.AUDIO_DIR / job.filename,
-                on_progress,
+                srt_path=srt_path,
+                on_progress=on_progress,
             )
             job.size_bytes = size
+            job.has_subtitles = srt_path.is_file()
             job.progress = 1.0
             job.status = "completed"
         except asyncio.CancelledError:

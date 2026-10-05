@@ -59,6 +59,7 @@ auto-tts --version           # 查看版本
 - **长文本**：自动分块合成，长度不限
 - **批量队列**：用空行分隔多段文本，每段成为一个独立任务
 - **任务面板**：实时进度、失败原因、试听、下载 mp3
+- **字幕导出**：任务完成后可下载与音频逐句对齐的 SRT 字幕
 
 ### 关于语气
 
@@ -105,6 +106,7 @@ cd auto-tts
 | GET | `/api/jobs/{id}` | 单个任务 |
 | DELETE | `/api/jobs/{id}` | 删除任务 |
 | GET | `/api/audio/{filename}` | 获取音频文件 |
+| GET | `/api/subtitles/{filename}` | 获取 SRT 字幕文件 |
 
 ## 技术栈
 

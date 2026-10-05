@@ -34,6 +34,7 @@ export const enUS: Catalog = {
   'job.size.kb': '{value} KB',
   'job.duration': '{value}s',
   'job.download': 'Download MP3',
+  'job.downloadSrt': 'Download SRT',
 
   'panel.settings': 'Synthesis settings',
   'panel.mode': 'Synthesis mode',
