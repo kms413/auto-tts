@@ -1,6 +1,6 @@
 {
   "name": "auto-tts",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Unlimited text to speech with selectable voices and speaking tones, powered by edge-tts.",
   "license": "AGPL-3.0-or-later",
   "author": "kms413",
