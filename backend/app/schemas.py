@@ -20,6 +20,12 @@ class SynthesisRequest(BaseModel):
     pitch: int = Field(default=0, ge=-100, le=100, description="Pitch delta, Hz.")
 
 
+class MergeRequest(BaseModel):
+    """Identifiers of completed jobs to concatenate, in the requested order."""
+
+    ids: list[str] = Field(default_factory=list, description="Job ids to merge.")
+
+
 class JobView(BaseModel):
     """Serialised view of a synthesis job."""
 

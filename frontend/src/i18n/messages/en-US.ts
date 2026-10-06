@@ -11,6 +11,11 @@ export const enUS: Catalog = {
   'app.dismiss': 'Got it',
   'app.queue': 'Job queue',
   'app.queue.countUnit': '{count, plural, one {{count}<em>job</em>} other {{count}<em>jobs</em>}}',
+  'app.selected': '{count} selected',
+  'app.mergeButton': 'Merge audio + subtitles',
+  'app.mergeBusy': 'Merging…',
+  'app.clearAll': 'Clear queue',
+  'app.clearConfirm': 'Delete every job and its audio? This cannot be undone.',
   'app.license': 'AGPL-3.0 licensed',
   'app.source': 'Get the source',
 
@@ -22,6 +27,7 @@ export const enUS: Catalog = {
   'job.empty.hint':
     'Paste text on the left, choose a voice and a tone, then press Generate — the audio shows up here.',
   'job.remove': 'Remove',
+  'job.select': 'Select this job',
   'job.spec.tone': 'Tone',
   'job.spec.rate': 'Rate',
   'job.spec.pitch': 'Pitch',
@@ -35,6 +41,13 @@ export const enUS: Catalog = {
   'job.duration': '{value}s',
   'job.download': 'Download MP3',
   'job.downloadSrt': 'Download SRT',
+
+  'merge.title': 'Merged result',
+  'merge.count': '{count} jobs merged',
+  'merge.duration': '{value}s long',
+  'merge.downloadAudio': 'Download merged MP3',
+  'merge.downloadSrt': 'Download merged SRT',
+  'merge.dismiss': 'Close',
 
   'panel.settings': 'Synthesis settings',
   'panel.mode': 'Synthesis mode',

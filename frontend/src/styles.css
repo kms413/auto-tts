@@ -482,6 +482,76 @@ body {
   font-weight: 500;
 }
 
+.queue__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ghost {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.ghost:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.ghost--danger:hover:not(:disabled) {
+  border-color: var(--signal);
+  background: rgba(226, 58, 46, 0.08);
+  color: var(--signal);
+}
+
+.ghost:disabled {
+  color: var(--ink-soft);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.merge {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--signal);
+  border-radius: var(--radius);
+}
+
+.merge__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.merge__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.merge__head .take__remove {
+  margin-left: auto;
+}
+
 .takes {
   margin: 0;
   padding: 0;
@@ -507,6 +577,15 @@ body {
   font-size: 15px;
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
+}
+
+.take__check {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--signal);
+  cursor: pointer;
 }
 
 .take__status {

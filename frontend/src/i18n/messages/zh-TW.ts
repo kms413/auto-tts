@@ -11,6 +11,11 @@ export const zhTW: Catalog = {
   'app.dismiss': '知道了',
   'app.queue': '任務佇列',
   'app.queue.countUnit': '{count}<em>則</em>',
+  'app.selected': '已選 {count} 則',
+  'app.mergeButton': '合併音訊與字幕',
+  'app.mergeBusy': '合併中…',
+  'app.clearAll': '清空佇列',
+  'app.clearConfirm': '確定要刪除全部任務與其音訊嗎？此操作無法復原。',
   'app.license': 'AGPL-3.0 授權',
   'app.source': '取得原始碼',
 
@@ -21,6 +26,7 @@ export const zhTW: Catalog = {
   'job.empty.title': '佇列還是空的',
   'job.empty.hint': '在左邊貼上文字，選好音色與語氣，點「生成語音」後音訊會出現在這裡。',
   'job.remove': '刪除',
+  'job.select': '選擇此任務',
   'job.spec.tone': '語氣',
   'job.spec.rate': '語速',
   'job.spec.pitch': '音調',
@@ -34,6 +40,13 @@ export const zhTW: Catalog = {
   'job.duration': '{value} 秒',
   'job.download': '下載 MP3',
   'job.downloadSrt': '下載 SRT',
+
+  'merge.title': '合併結果',
+  'merge.count': '{count} 則已合併',
+  'merge.duration': '長度 {value} 秒',
+  'merge.downloadAudio': '下載合併 MP3',
+  'merge.downloadSrt': '下載合併 SRT',
+  'merge.dismiss': '關閉',
 
   'panel.settings': '合成設定',
   'panel.mode': '合成模式',

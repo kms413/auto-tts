@@ -8,6 +8,8 @@ import Waveform from './Waveform'
 
 interface Props {
   jobs: Job[]
+  selected: Set<string>
+  onToggle: (id: string) => void
   onDelete: (id: string) => void
 }
 
@@ -22,7 +24,7 @@ function signed(value: number, unit: string) {
   return `${value > 0 ? '+' : ''}${value}${unit}`
 }
 
-export default function JobList({ jobs, onDelete }: Props) {
+export default function JobList({ jobs, selected, onToggle, onDelete }: Props) {
   const intl = useIntl()
   const t = useT()
 
@@ -55,6 +57,15 @@ export default function JobList({ jobs, onDelete }: Props) {
         return (
           <li key={job.id} className={`take take--${job.status}`}>
             <div className="take__head">
+              {job.status === 'completed' && (
+                <input
+                  type="checkbox"
+                  className="take__check"
+                  checked={selected.has(job.id)}
+                  aria-label={t('job.select')}
+                  onChange={() => onToggle(job.id)}
+                />
+              )}
               <span className="take__index">{String(index + 1).padStart(2, '0')}</span>
               <span className={`take__status take__status--${job.status}`}>{t(STATUS_ID[job.status])}</span>
               <span className="take__voice" title={job.voice}>

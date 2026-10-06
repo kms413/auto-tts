@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config, tts
 from .jobs import JobManager
-from .schemas import JobView, SynthesisRequest
+from .schemas import JobView, MergeRequest, SynthesisRequest
 
 manager = JobManager(config.MAX_CONCURRENCY)
 
@@ -86,6 +86,21 @@ async def create_jobs(payload: SynthesisRequest) -> list[dict]:
 @app.get("/api/jobs", response_model=list[JobView])
 async def list_jobs() -> list[dict]:
     return [job.to_dict() for job in await manager.list()]
+
+
+@app.delete("/api/jobs")
+async def clear_jobs() -> dict:
+    """Delete every job together with its audio and subtitle files."""
+    return {"deleted": await manager.clear()}
+
+
+@app.post("/api/jobs/merge")
+async def merge_jobs(payload: MergeRequest) -> dict:
+    """Concatenate the selected jobs into one mp3 and one merged srt."""
+    try:
+        return await manager.merge(payload.ids)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/api/jobs/{job_id}", response_model=JobView)

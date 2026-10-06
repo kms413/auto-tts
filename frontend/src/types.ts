@@ -42,3 +42,12 @@ export interface SynthesisPayload {
   volume: number
   pitch: number
 }
+
+export interface JobMerge {
+  id: string
+  count: number
+  size_bytes: number
+  duration: number
+  audio_url: string
+  srt_url: string | null
+}

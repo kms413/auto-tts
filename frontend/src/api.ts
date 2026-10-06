@@ -1,4 +1,4 @@
-import type { Job, SynthesisPayload, Tone, Voice } from './types'
+import type { Job, JobMerge, SynthesisPayload, Tone, Voice } from './types'
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, init)
@@ -30,3 +30,12 @@ export const createJobs = (payload: SynthesisPayload) =>
 
 export const deleteJob = (id: string) =>
   request<{ deleted: string }>(`/api/jobs/${id}`, { method: 'DELETE' })
+
+export const clearJobs = () => request<{ deleted: number }>('/api/jobs', { method: 'DELETE' })
+
+export const mergeJobs = (ids: string[]) =>
+  request<JobMerge>('/api/jobs/merge', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  })

@@ -6,6 +6,7 @@ import asyncio
 import re
 from collections.abc import Awaitable, Callable
 from pathlib import Path
+from typing import Any
 
 import edge_tts
 
@@ -131,8 +132,11 @@ async def synthesize(
 ) -> int:
     """Synthesise *text* into an mp3 file and return the number of audio bytes written.
 
-    When *srt_path* is provided, sentence-level subtitles derived from the
-    service's boundary events are written alongside the audio.
+    The text is split into chunks, which are independent edge-tts streams. They
+    are synthesised in parallel (bounded by ``CHUNK_CONCURRENCY``) and then
+    concatenated in order, which cuts the wall time of long texts roughly by the
+    degree of parallelism. When *srt_path* is provided, sentence-level subtitles
+    derived from the service's boundary events are written alongside the audio.
     """
     chunks = split_text(text, config.CHUNK_SIZE)
     if not chunks:
@@ -140,31 +144,58 @@ async def synthesize(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = out_path.with_name(f"{out_path.name}.part")
-    submaker = edge_tts.SubMaker()
+
+    limit = asyncio.Semaphore(max(1, config.CHUNK_CONCURRENCY))
     total = len(chunks)
+    finished = 0
+
+    async def render(chunk: str) -> tuple[bytes, list[dict[str, Any]]]:
+        """Synthesise one chunk, returning its audio bytes and boundary events."""
+        nonlocal finished
+        buffer = bytearray()
+        events: list[dict[str, Any]] = []
+        async with limit:
+            communicate = edge_tts.Communicate(
+                chunk,
+                voice,
+                rate=rate,
+                volume=volume,
+                pitch=pitch,
+                boundary="SentenceBoundary",
+            )
+            async for message in communicate.stream():
+                if message["type"] == "audio":
+                    buffer.extend(message["data"])
+                elif message["type"] in ("WordBoundary", "SentenceBoundary"):
+                    events.append(message)
+        finished += 1
+        if on_progress is not None:
+            await on_progress(finished / total)
+        return bytes(buffer), events
+
+    tasks = [asyncio.create_task(render(chunk)) for chunk in chunks]
+    try:
+        rendered = await asyncio.gather(*tasks)
+    except BaseException:
+        # A failed chunk must not leave its siblings streaming in the background.
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        tmp_path.unlink(missing_ok=True)
+        raise
+
+    submaker = edge_tts.SubMaker()
     written = 0
     try:
         with tmp_path.open("wb") as handle:
-            for index, chunk in enumerate(chunks):
-                # Boundary offsets from a fresh Communicate are relative to its own
-                # audio, so shift them by the duration of everything written so far.
+            for buffer, events in rendered:
+                # Boundary offsets from a fresh Communicate are relative to its
+                # own audio, so shift them by the duration of everything before.
                 base = _audio_ticks(written)
-                communicate = edge_tts.Communicate(
-                    chunk,
-                    voice,
-                    rate=rate,
-                    volume=volume,
-                    pitch=pitch,
-                    boundary="SentenceBoundary",
-                )
-                async for message in communicate.stream():
-                    if message["type"] == "audio":
-                        handle.write(message["data"])
-                        written += len(message["data"])
-                    elif message["type"] in ("WordBoundary", "SentenceBoundary"):
-                        submaker.feed({**message, "offset": message["offset"] + base})
-                if on_progress is not None:
-                    await on_progress((index + 1) / total)
+                for event in events:
+                    submaker.feed({**event, "offset": event["offset"] + base})
+                handle.write(buffer)
+                written += len(buffer)
         tmp_path.replace(out_path)
         if srt_path is not None:
             _write_subtitles(submaker, srt_path)

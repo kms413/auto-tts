@@ -13,6 +13,11 @@ export const zhCN = {
   'app.dismiss': '知道了',
   'app.queue': '任务队列',
   'app.queue.countUnit': '{count}<em>条</em>',
+  'app.selected': '已选 {count} 条',
+  'app.mergeButton': '合并音频与字幕',
+  'app.mergeBusy': '合并中…',
+  'app.clearAll': '清空队列',
+  'app.clearConfirm': '确定要删除全部任务及其音频吗？此操作不可恢复。',
   'app.license': 'AGPL-3.0 许可',
   'app.source': '获取源代码',
 
@@ -23,6 +28,7 @@ export const zhCN = {
   'job.empty.title': '队列还是空的',
   'job.empty.hint': '在左边粘贴文本，选好音色和语气，点「生成语音」后音频会出现在这里。',
   'job.remove': '删除',
+  'job.select': '选择该任务',
   'job.spec.tone': '语气',
   'job.spec.rate': '语速',
   'job.spec.pitch': '音调',
@@ -36,6 +42,13 @@ export const zhCN = {
   'job.duration': '{value} 秒',
   'job.download': '下载 MP3',
   'job.downloadSrt': '下载 SRT',
+
+  'merge.title': '合并结果',
+  'merge.count': '{count} 条已合并',
+  'merge.duration': '时长 {value} 秒',
+  'merge.downloadAudio': '下载合并 MP3',
+  'merge.downloadSrt': '下载合并 SRT',
+  'merge.dismiss': '关闭',
 
   'panel.settings': '合成设置',
   'panel.mode': '合成模式',

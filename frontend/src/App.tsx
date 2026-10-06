@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { createJobs, deleteJob, fetchJobs, fetchTones, fetchVoices } from './api'
+import { clearJobs, createJobs, deleteJob, fetchJobs, fetchTones, fetchVoices, mergeJobs } from './api'
 import JobList from './components/JobList'
 import LocaleSwitch from './components/LocaleSwitch'
 import SynthesisPanel from './components/SynthesisPanel'
 import Waveform from './components/Waveform'
 import { Msg, useT } from './i18n/t'
-import type { Job, SynthesisPayload, Tone, Voice } from './types'
+import type { Job, JobMerge, SynthesisPayload, Tone, Voice } from './types'
 
 const POLL_INTERVAL_MS = 1500
 
@@ -16,6 +16,10 @@ export default function App() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [merging, setMerging] = useState(false)
+  const [clearing, setClearing] = useState(false)
+  const [mergeResult, setMergeResult] = useState<JobMerge | null>(null)
   const loaded = useRef(false)
   const t = useT()
 
@@ -44,6 +48,15 @@ export default function App() {
     return () => window.clearInterval(timer)
   }, [refreshJobs])
 
+  // Drop selections for jobs that vanished or are no longer mergeable.
+  useEffect(() => {
+    setSelected((prev) => {
+      const mergeable = new Set(jobs.filter((job) => job.status === 'completed').map((job) => job.id))
+      const next = new Set([...prev].filter((id) => mergeable.has(id)))
+      return next.size === prev.size ? prev : next
+    })
+  }, [jobs])
+
   const handleSubmit = useCallback(
     async (payload: SynthesisPayload) => {
       setSubmitting(true)
@@ -71,6 +84,49 @@ export default function App() {
     },
     [refreshJobs],
   )
+
+  const handleToggle = useCallback((id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
+  // Merge oldest first so the combined audio follows the submission order.
+  const handleMerge = useCallback(async () => {
+    const ids = jobs
+      .filter((job) => selected.has(job.id))
+      .sort((a, b) => a.created_at - b.created_at)
+      .map((job) => job.id)
+    if (ids.length === 0) return
+    setMerging(true)
+    try {
+      setMergeResult(await mergeJobs(ids))
+      setError(null)
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setMerging(false)
+    }
+  }, [jobs, selected])
+
+  const handleClearAll = useCallback(async () => {
+    if (!window.confirm(t('app.clearConfirm'))) return
+    setClearing(true)
+    try {
+      await clearJobs()
+      setSelected(new Set())
+      setMergeResult(null)
+      setError(null)
+      await refreshJobs()
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setClearing(false)
+    }
+  }, [refreshJobs, t])
 
   const stats = useMemo(() => {
     let live = 0
@@ -138,7 +194,51 @@ export default function App() {
               <Msg id="app.queue.countUnit" values={{ count: jobs.length, em: (chunks) => <em>{chunks}</em> }} />
             </span>
           </div>
-          <JobList jobs={jobs} onDelete={handleDelete} />
+
+          {jobs.length > 0 && (
+            <div className="queue__tools">
+              <span className="readout">{t('app.selected', { count: selected.size })}</span>
+              <div className="queue__actions">
+                <button className="ghost" disabled={merging || selected.size === 0} onClick={handleMerge}>
+                  {merging ? t('app.mergeBusy') : t('app.mergeButton')}
+                </button>
+                <button
+                  className="ghost ghost--danger"
+                  disabled={clearing}
+                  onClick={handleClearAll}
+                >
+                  {t('app.clearAll')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {mergeResult && (
+            <div className="merge">
+              <div className="merge__head">
+                <span className="merge__title">{t('merge.title')}</span>
+                <span className="readout">
+                  {t('merge.count', { count: mergeResult.count })} · {t('merge.duration', { value: mergeResult.duration })}
+                </span>
+                <button className="take__remove" onClick={() => setMergeResult(null)}>
+                  {t('merge.dismiss')}
+                </button>
+              </div>
+              <div className="take__play">
+                <audio controls preload="metadata" src={mergeResult.audio_url} />
+                <a className="take__download" href={mergeResult.audio_url} download={`${mergeResult.id}.mp3`}>
+                  {t('merge.downloadAudio')}
+                </a>
+                {mergeResult.srt_url && (
+                  <a className="take__download" href={mergeResult.srt_url} download={`${mergeResult.id}.srt`}>
+                    {t('merge.downloadSrt')}
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          <JobList jobs={jobs} selected={selected} onToggle={handleToggle} onDelete={handleDelete} />
         </section>
       </main>
 
